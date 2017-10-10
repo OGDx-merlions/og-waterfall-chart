@@ -55,12 +55,12 @@
       },
       //chart appearance related properties
       width: {
-        type: Number,
-        value: 960
+        type: String,
+        value: "100%"
       },
       height: {
-        type: Number,
-        value: 500
+        type: String,
+        value: "300px"
       },
       barPadding: {
         type: Number,
@@ -84,24 +84,31 @@
 
     ready: function(){
       this.scopeSubtree(this.$.waterSVG, true);
+    },
 
+    attached: function(){
       //if data is just empty then we can't continue building the chart
       if(!this.data || this.data.length == 0)
         return false;
 
-      var svg = d3.select(this.$.waterSVG);
+      var compStyles = window.getComputedStyle(d3.select(this.$.chart).node())
+        , width = parseInt(compStyles.width)
+        , height = parseInt(compStyles.height);
 
+      var svg = d3.select(this.$.waterSVG);
       var margin = this.chartMargins;
 
       this._setInnerDimensions({
-        width: this.width  - margin.left - margin.right,
-        height: this.height  - margin.top - margin.bottom
-      });
+          width: width - margin.left - margin.right,
+          height: this.height  - margin.top - margin.bottom
+        });
 
       if(this.yAxisLabel != "")
         margin.left += 50;
 
       this._buildChart(svg);
+
+      d3.select(window).on('resize', this._resize.bind(this));
     },
 
     _processData: function(){
@@ -183,6 +190,7 @@
 
     _buildAxes: function(axes, g){
       //to display the X axis on the chart
+
       g.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + this.innerDimensions.height + ")")
@@ -259,9 +267,8 @@
       var x = bounds.x
         , y = bounds.y;
 
-        // console.log(this.innerDimensions.width + margin.left + margin.right, this.innerDimensions.height + margin.top + margin.bottom);
       svg.attr("width", this.innerDimensions.width + margin.left + margin.right)
-          .attr("height", this.innerDimensions.height + margin.top + margin.bottom)
+          .attr("height", this.innerDimensions.height + margin.top + margin.bottom)//this.innerDimensions.height + margin.top + margin.bottom)
           .append("g").attr("class", "container")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -310,7 +317,7 @@
         //   .style("text-anchor", "middle");
       }
 
-      leg.attr("transform", "translate(" + ((this.width / 2) - ((this.legends.length*100 + 15*this.legends.length) / 2)) + ",0)");
+      leg.attr("transform", "translate(" + ((this.innerDimensions.width / 2) - ((this.legends.length*100 + 15*this.legends.length) / 2)) + ",0)");
     },
 
     _dataChanged: function(){
@@ -321,6 +328,25 @@
 
         this._buildChart(svg);
       }
+    },
+
+    _resize: function() {
+
+      var svg = d3.select("#waterSVG")
+        , compStyles = window.getComputedStyle(d3.select("#chart").node())
+        , width = parseInt(compStyles.width)
+        , height = parseInt(compStyles.height)
+        , margin = this.chartMargins;
+
+      this._setInnerDimensions({
+          width: width - margin.left - margin.right,
+          height: height  - margin.top - margin.bottom
+        });
+
+      svg.select(".container").remove();
+      svg.select(".legend").remove();
+
+      this._buildChart(svg);
     }
   });
 })();
