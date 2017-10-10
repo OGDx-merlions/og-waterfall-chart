@@ -1,0 +1,37 @@
+{
+  "name": "og-waterfall-chart",
+  "version": "0.0.1",
+  "main": [
+    "og-waterfall-chart.html"
+  ],
+  "ignore": [
+    ".*",
+    "npm-debug.log",
+    "gulpfile.js",
+    "sass",
+    "test",
+    "OSS_Notice.pdf",
+    "scripts",
+    ".github",
+    "og-waterfall-chart.png",
+    "LICENSE.md",
+    "CONTRIBUTING.md",
+    "HISTORY.md",
+    "README.md",
+    ".jshintrc",
+    ".editorconfig",
+    "*.enc"
+  ],
+  "dependencies": {
+    "polymer": "^1.9.0",
+    "d3": "^4.11.0"
+  },
+  "devDependencies": {
+    "px-starter-kit-design": "^1.0.0",
+    "px-demo": "^2.0.0",
+    "px-theme": "^3.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^0.7.0"
+  }
+}

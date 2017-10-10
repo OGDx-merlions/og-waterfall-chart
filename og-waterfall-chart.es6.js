@@ -1,0 +1,326 @@
+(function() {
+  Polymer({
+
+    is: 'og-waterfall-chart',
+
+    properties:{
+      data: {
+        type: Array,
+        value: [],
+        observer: '_dataChanged'
+      },
+      startingValue: {
+        type: Object,
+        value: {
+          label: "Clean",
+          value: 97505
+        }
+      },
+      floorValue: {
+        type: Number,
+        value: 96000
+      },
+      yAxisTicks: {
+        type: Number,
+        value: 5
+      },
+      yTickInterval: {
+        type: Number,
+        value: 500
+      },
+      yAxisLabel: {
+        type: String,
+        value: "LNG mass flow in kg/h"
+      },
+      isChartBuilt: {
+        type: Boolean,
+        value: false,
+        readOnly: true
+      },
+      innerDimensions: {
+        type: Object,
+        readOnly: true,
+        value: {
+          width: 960,
+          height: 500
+        }
+      },
+      legends: {
+        type: Array,
+        value: [
+          { label: "Increase", color: "#5b9bd5" },
+          { label: "Decrease", color: "#ed7d31" },
+          { label: "Total", color: "#a5a5a5" }
+        ]
+      },
+      //chart appearance related properties
+      width: {
+        type: Number,
+        value: 960
+      },
+      height: {
+        type: Number,
+        value: 500
+      },
+      barPadding: {
+        type: Number,
+        value: 0.3
+      },
+      chartMargins: {
+        type: Object,
+        value: {top: 20, right: 30, bottom: 100, left: 40 }
+      }
+    },
+
+    listeners: {
+      'barClick': 'barClick'
+    },
+
+    barClick: function(d, i) {
+      this.fire('bar-click', {data: d, index: i}, {
+        bubbles: false
+      });
+    },
+
+    ready: function(){
+      this.scopeSubtree(this.$.waterSVG, true);
+
+      //if data is just empty then we can't continue building the chart
+      if(!this.data || this.data.length == 0)
+        return false;
+
+      var svg = d3.select(this.$.waterSVG);
+
+      var margin = this.chartMargins;
+
+      this._setInnerDimensions({
+        width: this.width  - margin.left - margin.right,
+        height: this.height  - margin.top - margin.bottom
+      });
+
+      if(this.yAxisLabel != "")
+        margin.left += 50;
+
+      this._buildChart(svg);
+    },
+
+    _processData: function(){
+      if(!this.data || this.data.length == 0)
+        return [];
+
+      var data = []
+        , cumulative = this.startingValue.value
+        , currentGrp = this.data[0].groupName;
+
+      data.push({
+        name: this.data[0].groupName+'Total',
+        end: this.startingValue.value,
+        start: this.floorValue,
+        class: 'total',
+        label: 'Clean' //TODO: need to make this as a property
+      });
+      for(var i=0; i<this.data.length; i++){
+        for(var g=0; g<this.data[i].values.length; g++){
+          var currBar = this.data[i].values[g];
+          currBar.name = currBar.name + this.data[i].groupName;
+          currBar.class = this.data[i].groupName;
+          currBar.start = (cumulative < this.floorValue) ? this.floorValue : cumulative;
+          cumulative += this.data[i].values[g].value;
+          currBar.end = cumulative;
+          currBar.label = this.data[i].values[g].label;
+          data.push(currBar);
+        }
+        currentGrp = this.data[i].groupName;
+
+        if(currentGrp != this.data[i].groupNament){//create a total column
+          data.push({
+            name: 'Total' + i,
+            end: cumulative,
+            start: this.floorValue,
+            class: 'total',
+            //TODO: Need to find a better way to set the middle label
+            label: i==0 ? 'all degraded' : 'Clean'
+          });
+        }
+      }
+
+      return data;
+    },
+
+    _xyBounds: function(data){
+      var bounds = {
+        ceiling: d3.max(data, function(d) { return d.end; }) + this.yTickInterval,
+        x: d3.scaleBand()
+                .rangeRound([0, this.innerDimensions.width])
+                .paddingInner(0.05),
+        y: d3.scaleLinear()
+                .rangeRound([this.innerDimensions.height, 0])
+      }
+
+      //x column domain
+      bounds.x.domain(data.map(function(d) { return d.name; }));
+      //y column domain, from 0 to the biggest end value
+      //if this chart is going to display negatives then it should use d3.min(data, function(d){ return d.start })
+      bounds.y.domain([this.floorValue, bounds.ceiling]);
+
+      return bounds;
+    },
+
+    _axes: function(data, bounds){
+      var axes = {
+        xAxis: d3.axisBottom(bounds.x).tickFormat(function(d){
+              //fetch the label field
+              //TODO: need to refactor this
+              for(var l=0; l<data.length; l++)
+                if(data[l].name == d)
+                  return data[l].label;
+            }),
+        yAxis: d3.axisLeft(bounds.y).ticks(this.yAxisTicks).tickValues(d3.range(this.floorValue, bounds.ceiling, this.yTickInterval))
+      }
+
+      return axes;
+    },
+
+    _buildAxes: function(axes, g){
+      //to display the X axis on the chart
+      g.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + this.innerDimensions.height + ")")
+        .call(axes.xAxis)
+        .selectAll("text")
+        .attr("y", 20)
+        .attr("x", -20)
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(-60)")
+        .style("text-anchor", "end");
+
+
+      //to display the Y axis on the chart
+      g.append("g")
+          .attr("class", "y axis")
+          .call(axes.yAxis);
+
+      g.append("g")
+        .attr("class", "grid")
+        .call(axes.yAxis
+            .tickSize(-this.innerDimensions.width)
+            .tickFormat("")
+        );
+    },
+
+    _buildBars: function(data, g, x, y){
+      var formatComma = d3.format(",");
+
+      //adding each bar from the data
+      //this are the columns. the gaps between them are based on the x() function created above
+      var bar = g.selectAll(".bar")
+          .data(data)
+          .enter().append("g")
+          .attr("class", function(d) { return "bar " + d.class })
+          .attr("transform", function(d) { return "translate(" + x(d.name) + ",0)"; })
+          .on("click", this.barClick.bind(this));
+
+      //on each column we add the actual bars that will appear
+      //the position("y") is based on either the start or end (whichever is bigger of the 2)
+      //the height of the bar is based on the difference of start and end (no negatives)
+      bar.append("rect")
+          .attr("y", function(d) { return y( Math.max(d.start, d.end) ); })
+          .attr("height", function(d) { return Math.abs( y(d.start) - y(d.end) ); })
+          .attr("width", x.bandwidth());
+
+      //this is text that appears on the bar
+      bar.append("text")
+          .attr("x", x.bandwidth() / 2)
+          .attr("y", function(d) {
+            return d.class=="decrease" ? y(d.end) : y(d.end) - 10;
+          })
+          .attr("dy", function(d) { return ((d.class=='negative') ? '-' : '') + ".75em" })
+          .text(function(d) { return (d.class=="total") ? formatComma(d.end) : formatComma(d.end - d.start);});
+
+      bar.filter(function(d) { return d.class != "total" }).append("line")
+          .attr("class", "connector")
+          .attr("x1", x.bandwidth() + 5 )
+          .attr("y1", function(d) { return y(d.end) } )
+          .attr("x2", x.bandwidth() / ( 1 - this.barPadding) - 5 )
+          .attr("y2", function(d) { return y(d.end) } )
+    },
+
+    _buildChart: function(svg){
+      var margin = this.chartMargins;
+
+      //transform the data that the start and end properties are added
+      //the start of each data should be the value of the cumulative value so far
+      var data = this._processData();
+
+      //setting x and y scales based on the dimensions of the SVG
+      var bounds = this._xyBounds(data)
+        , axes = this._axes(data, bounds);
+
+      var x = bounds.x
+        , y = bounds.y;
+
+        // console.log(this.innerDimensions.width + margin.left + margin.right, this.innerDimensions.height + margin.top + margin.bottom);
+      svg.attr("width", this.innerDimensions.width + margin.left + margin.right)
+          .attr("height", this.innerDimensions.height + margin.top + margin.bottom)
+          .append("g").attr("class", "container")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      var g = svg.select(".container");
+
+      this._buildAxes(axes, g);
+
+      this._buildBars(data, g, x, y);
+
+      this._addLegend(svg);
+
+      // text label for the y axis
+      if(this.yAxisLabel != "")
+        g.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 10 - margin.left)
+            .attr("x",0 - (this.height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text(this.yAxisLabel);
+
+      this._setIsChartBuilt(true);
+    },
+
+    _addLegend: function(svg){
+      if(!this.legends || this.legends.length == 0)
+        return false;
+
+      var leg = svg.append("g").attr("class", "legend");
+
+      for(var i=0; i<this.legends.length; i++){
+        leg.append("rect")
+        .attr("class", "leg-rect")
+        .attr("x", i * 100)
+        .attr("y", 0)
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("fill", this.legends[i].color);
+
+        leg.append("text")
+          .attr("x", (i * 100) + 12)
+          .attr("y", -5)
+          .attr("dy", "1em")
+          .text(this.legends[i].label);
+        // .attr("x", (this.width / 2))
+        //   .style("text-anchor", "middle");
+      }
+
+      leg.attr("transform", "translate(" + ((this.width / 2) - ((this.legends.length*100 + 15*this.legends.length) / 2)) + ",0)");
+    },
+
+    _dataChanged: function(){
+      if(this.isChartBuilt){
+        var svg = d3.select(this.$.waterSVG);
+
+        svg.select(".container").remove();
+
+        this._buildChart(svg);
+      }
+    }
+  });
+})();

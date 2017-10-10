@@ -1,0 +1,72 @@
+<!--
+    Relative paths assume component is being run from inside an app or another component, where dependencies are flat
+    siblings. When this component is run from its own repo (e.g. tests, examples), we assume the server is started with
+    'gulp serve' (or similar server setup) to enable correct finding of bower dependencies for local runs.
+-->
+<link rel="import" href="../polymer/polymer.html"/>
+
+<link rel="import" href="css/og-waterfall-chart-styles.html">
+
+<link rel="import" href="dependency/d3.html">
+<!--
+This is simple Waterfall chart that uses D3 js ver.4
+
+### Usage
+
+    <og-waterfall-chart data="[[chartData]]" on-bar-click="handleBarClick"></og-waterfall-chart>
+
+@element og-waterfall-chart
+@blurb This is simple Waterfall chart that uses D3 js ver.4
+@homepage index.html
+@demo index.html
+-->
+
+<dom-module id="og-waterfall-chart">
+  <template>
+    <style include="og-waterfall-chart-styles">
+      svg{ background-color: white; }
+
+      .bar.total rect {
+        fill: #a5a5a5;
+        cursor: pointer;
+      }
+
+      .bar.increase rect {
+        fill: #5b9bd5;
+        cursor: pointer;
+      }
+      .bar.decrease rect {
+        fill: #ed7d31;
+        cursor: pointer;
+      }
+
+      .bar line.connector {
+        stroke: grey;
+        stroke-dasharray: 3;
+      }
+
+      .bar text {
+        fill: black;
+        font: 12px sans-serif;
+        text-anchor: middle;
+      }
+
+      .axis text {
+        font: 10px sans-serif;
+      }
+
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+
+      .tick line, .grid path{
+        stroke: #b3b3b3;
+      }
+    </style>
+    <svg id="waterSVG" width="[[width]]" height="[[height]]"></svg>
+  </template>
+</dom-module>
+<script src="dist/og-waterfall-chart.js"></script>
