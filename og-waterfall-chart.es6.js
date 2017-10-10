@@ -69,6 +69,10 @@
       chartMargins: {
         type: Object,
         value: {top: 20, right: 30, bottom: 100, left: 40 }
+      },
+      notResponsive: {
+        type: Boolean,
+        value: false
       }
     },
 
@@ -88,12 +92,13 @@
 
     attached: function(){
       //if data is just empty then we can't continue building the chart
+      console.log(this.notResponsive);
       if(!this.data || this.data.length == 0)
         return false;
 
       var compStyles = window.getComputedStyle(d3.select(this.$.chart).node())
-        , width = parseInt(compStyles.width)
-        , height = parseInt(compStyles.height);
+        , width = (!this.notResponsive) ? parseInt(compStyles.width) : this.width
+        , height = (!this.notResponsive) ? parseInt(compStyles.height) : this.height;
 
       var svg = d3.select(this.$.waterSVG);
       var margin = this.chartMargins;
@@ -108,7 +113,8 @@
 
       this._buildChart(svg);
 
-      d3.select(window).on('resize', this._resize.bind(this));
+      if(!this.notResponsive)
+        d3.select(window).on('resize', this._resize.bind(this));
     },
 
     _processData: function(){
