@@ -86,6 +86,24 @@
       });
     },
 
+    redrawChart: function(){
+      var svg = d3.select("#waterSVG")
+        , compStyles = d3.select(this.$.chart).node()
+        , width = parseInt(compStyles.clientWidth)
+        , height = parseInt(this.height)
+        , margin = this.chartMargins;
+
+      this._setInnerDimensions({
+          width: width - margin.left - margin.right,
+          height: height  - margin.top - margin.bottom
+        });
+
+      svg.select(".container").remove();
+      svg.select(".legend").remove();
+
+      this._buildChart(svg);
+    },
+
     ready: function(){
       this.scopeSubtree(this.$.waterSVG, true);
     },
