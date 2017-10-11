@@ -66,6 +66,10 @@
         type: Number,
         value: 0.3
       },
+      barMaxWidth: {
+        type: Number,
+        value: 50
+      },
       chartMargins: {
         type: Object,
         value: {top: 20, right: 30, bottom: 100, left: 40 }
@@ -144,39 +148,61 @@
         return [];
 
       var data = []
-        , cumulative = this.startingValue.value
+        , cumulative = +this.startingValue
         , currentGrp = this.data[0].groupName;
-
-      data.push({
-        name: this.data[0].groupName+'Total',
-        end: this.startingValue.value,
-        start: this.floorValue,
-        class: 'total',
-        label: 'Clean' //TODO: need to make this as a property
-      });
+// console.log(this.startingValue);
+      // data.push({
+      //   name: this.data[0].groupName+'Total',
+      //   end: this.startingValue.value,
+      //   start: this.floorValue,
+      //   class: 'total',
+      //   label: 'Clean' //TODO: need to make this as a property
+      // });
       for(var i=0; i<this.data.length; i++){
         for(var g=0; g<this.data[i].values.length; g++){
           var currBar = this.data[i].values[g];
           currBar.name = currBar.name + this.data[i].groupName;
-          currBar.class = this.data[i].groupName;
-          currBar.start = (cumulative < this.floorValue) ? this.floorValue : cumulative;
+
+          if(this.data[i].values[g].isComputed){
+            currBar.class = 'total';
+            currBar.start = this.floorValue;
+            currBar.end = cumulative;
+          }
+          else{
+            currBar.start = (cumulative < this.floorValue) ? this.floorValue : cumulative;
+            currBar.class = this.data[i].groupName;
+          }
+
           cumulative += this.data[i].values[g].value;
-          currBar.end = cumulative;
+
+          if(this.data[i].values[g].isStarting){
+            currBar.end = +this.startingValue;
+            currBar.start = this.floorValue;
+            currBar.class = 'total';
+            cumulative = +this.startingValue;
+          }
+          else{
+            if(!this.data[i].values[g].isComputed)
+              currBar.end = cumulative;
+          }
+
           currBar.label = this.data[i].values[g].label;
+          currBar.isStarting = this.data[i].values[g].isStarting;
+          currBar.isComputed = this.data[i].values[g].isComputed;
           data.push(currBar);
         }
         currentGrp = this.data[i].groupName;
 
-        if(currentGrp != this.data[i].groupNament){//create a total column
-          data.push({
-            name: 'Total' + i,
-            end: cumulative,
-            start: this.floorValue,
-            class: 'total',
-            //TODO: Need to find a better way to set the middle label
-            label: i==0 ? 'all degraded' : 'Clean'
-          });
-        }
+        // if(currentGrp != this.data[i].groupNament){//create a total column
+        //   data.push({
+        //     name: 'Total' + i,
+        //     end: cumulative,
+        //     start: this.floorValue,
+        //     class: 'total',
+        //     //TODO: Need to find a better way to set the middle label
+        //     label: i==0 ? 'all degraded' : 'Clean'
+        //   });
+        // }
       }
 
       return data;
@@ -259,10 +285,12 @@
       //on each column we add the actual bars that will appear
       //the position("y") is based on either the start or end (whichever is bigger of the 2)
       //the height of the bar is based on the difference of start and end (no negatives)
+      var barWidth = (x.bandwidth() > this.barMaxWidth) ? this.barMaxWidth : x.bandwidth();
+
       bar.append("rect")
           .attr("y", function(d) { return y( Math.max(d.start, d.end) ); })
           .attr("height", function(d) { return Math.abs( y(d.start) - y(d.end) ); })
-          .attr("width", x.bandwidth());
+          .attr("width", barWidth);
 
       //this is text that appears on the bar
       bar.append("text")
@@ -275,7 +303,7 @@
 
       bar.filter(function(d) { return d.class != "total" }).append("line")
           .attr("class", "connector")
-          .attr("x1", x.bandwidth() + 5 )
+          .attr("x1", barWidth )
           .attr("y1", function(d) { return y(d.end) } )
           .attr("x2", x.bandwidth() / ( 1 - this.barPadding) - 5 )
           .attr("y2", function(d) { return y(d.end) } )
