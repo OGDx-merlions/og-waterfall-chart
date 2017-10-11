@@ -87,21 +87,24 @@
     },
 
     redrawChart: function(){
+      // window.setTimeout(function(){
       var svg = d3.select("#waterSVG")
-        , compStyles = d3.select(this.$.chart).node()
-        , width = parseInt(compStyles.clientWidth)
+        , compStyles = d3.select("#chart").node()
+        , width = parseInt(compStyles.clientWidth + 150)
         , height = parseInt(this.height)
         , margin = this.chartMargins;
+      // console.log(d3.select("#chart").node().clientWidth);
+      if(compStyles.clientWidth > 0){
+        this._setInnerDimensions({
+            width: width - margin.left - margin.right,
+            height: height  - margin.top - margin.bottom
+          });
 
-      this._setInnerDimensions({
-          width: width - margin.left - margin.right,
-          height: height  - margin.top - margin.bottom
-        });
+        svg.select(".container").remove();
+        svg.select(".legend").remove();
 
-      svg.select(".container").remove();
-      svg.select(".legend").remove();
-
-      this._buildChart(svg);
+        this._buildChart(svg);
+      }
     },
 
     ready: function(){
