@@ -30,7 +30,7 @@
       },
       yAxisLabel: {
         type: String,
-        value: "LNG mass flow in kg/h"
+        value: "" //LNG mass flow in kg/h
       },
       isChartBuilt: {
         type: Boolean,
@@ -72,7 +72,7 @@
       },
       chartMargins: {
         type: Object,
-        value: {top: 20, right: 30, bottom: 100, left: 40 }
+        value: {top: 40, right: 30, bottom: 100, left: 50 }
       },
       notResponsive: {
         type: Boolean,
@@ -236,25 +236,27 @@
                 if(data[l].name == d)
                   return data[l].label;
             }),
-        yAxis: d3.axisLeft(bounds.y).ticks(this.yAxisTicks).tickValues(d3.range(this.floorValue, bounds.ceiling, this.yTickInterval))
+        yAxis: d3.axisLeft(bounds.y).ticks(this.yAxisTicks)
+          .tickFormat(function(d){ return d; }).tickValues(d3.range(this.floorValue, bounds.ceiling, this.yTickInterval))
       }
 
       return axes;
     },
 
-    _buildAxes: function(axes, g){
+    _buildAxes: function(axes, g, x){
       //to display the X axis on the chart
-
+      var barWidth = (x.bandwidth() > this.barMaxWidth) ? this.barMaxWidth : x.bandwidth();
       g.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + this.innerDimensions.height + ")")
+        .attr("transform", "translate(-20," + this.innerDimensions.height + ")")
         .call(axes.xAxis)
         .selectAll("text")
         .attr("y", 20)
         .attr("x", -20)
         .attr("dy", ".35em")
-        .attr("transform", "rotate(-60)")
-        .style("text-anchor", "end");
+        .call(this._wrapText, barWidth);
+        // .attr("transform", "rotate(-60)")
+        // .style("text-anchor", "end");
 
 
       //to display the Y axis on the chart
@@ -269,7 +271,29 @@
             .tickFormat("")
         );
     },
-
+    _wrapText: function(text, width) {
+      text.each(function() {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            y = text.attr("y"),
+            dy = parseFloat(text.attr("dy")),
+            tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+          }
+        }
+      });
+    },
     _buildBars: function(data, g, x, y){
       var formatComma = d3.format(",");
 
@@ -294,7 +318,7 @@
 
       //this is text that appears on the bar
       bar.append("text")
-          .attr("x", x.bandwidth() / 2)
+          .attr("x", barWidth / 2)
           .attr("y", function(d) {
             return d.class=="decrease" ? y(d.end) : y(d.end) - 10;
           })
@@ -330,7 +354,7 @@
 
       var g = svg.select(".container");
 
-      this._buildAxes(axes, g);
+      this._buildAxes(axes, g, x);
 
       this._buildBars(data, g, x, y);
 
@@ -341,7 +365,7 @@
         g.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 10 - margin.left)
-            .attr("x",0 - (this.height / 2))
+            .attr("x", 50 - (this.height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .text(this.yAxisLabel);
@@ -360,20 +384,21 @@
         .attr("class", "leg-rect")
         .attr("x", i * 100)
         .attr("y", 0)
-        .attr("width", 10)
-        .attr("height", 10)
+        .attr("width", 3)
+        .attr("height", 20)
         .style("fill", this.legends[i].color);
 
         leg.append("text")
           .attr("x", (i * 100) + 12)
-          .attr("y", -5)
+          .attr("y", 0)
           .attr("dy", "1em")
-          .text(this.legends[i].label);
+          .text(this.legends[i].label)
         // .attr("x", (this.width / 2))
-        //   .style("text-anchor", "middle");
+          // .style("text-anchor", "middle");
       }
 
-      leg.attr("transform", "translate(" + ((this.innerDimensions.width / 2) - ((this.legends.length*100 + 15*this.legends.length) / 2)) + ",0)");
+      // leg.attr("transform", "translate(" + ((this.innerDimensions.width / 2) - ((this.legends.length*100 + 15*this.legends.length) / 2)) + ",0)");
+      leg.attr("transform", "translate(" + (this.innerDimensions.width - (this.legends.length*100 - 35*this.legends.length)) + ",5)");
     },
 
     _dataChanged: function(){
