@@ -48,9 +48,9 @@
       legends: {
         type: Array,
         value: [
-          { label: "Increase", color: "#5b9bd5" },
-          { label: "Decrease", color: "#ed7d31" },
-          { label: "Total", color: "#a5a5a5" }
+          { label: "Increase", color: "#d43875" },
+          { label: "Decrease", color: "#e2913b" },
+          { label: "Total", color: "#5fbcf8" }
         ]
       },
       //chart appearance related properties
@@ -162,6 +162,7 @@
         for(var g=0; g<this.data[i].values.length; g++){
           var currBar = this.data[i].values[g];
           currBar.name = currBar.name + this.data[i].groupName;
+          currBar.color = this.data[i].values[g].color;
 
           if(this.data[i].values[g].isComputed){
             currBar.class = 'total';
@@ -314,7 +315,16 @@
       bar.append("rect")
           .attr("y", function(d) { return y( Math.max(d.start, d.end) ); })
           .attr("height", function(d) { return Math.abs( y(d.start) - y(d.end) ); })
-          .attr("width", barWidth);
+          .attr("width", barWidth)
+          .attr("class", function(d) {
+              return (d.color) ? "":"no-color";
+          })
+          .attr("fill", function(d) {
+            if(d.color)
+              return d.color;
+          });
+      // if()
+      //     .attr("fill");
 
       //this is text that appears on the bar
       bar.append("text")

@@ -25,17 +25,19 @@ This is simple Waterfall chart that uses D3 js ver.4
   <template>
     <style include="og-waterfall-chart-styles">
       svg{ background-color: white; }
-
-      .bar.total rect {
+      .bar rect.no-color, .legend rect {
+        fill: #5fbcf8;
+      }
+      .bar.total rect.no-color {
         fill: #5fbcf8;
         cursor: pointer;
       }
 
-      .bar.increase rect {
-        fill: #5b9bd5;
+      .bar.increase rect.no-color {
+        fill: #d43875;
         cursor: pointer;
       }
-      .bar.decrease rect {
+      .bar.decrease rect.no-color {
         fill: #e2913b;
         cursor: pointer;
       }
@@ -67,6 +69,10 @@ This is simple Waterfall chart that uses D3 js ver.4
 
       .tick line, .grid path{
         stroke: #b3b3b3;
+      }
+
+      .axis.x .domain, .axis.y .domain{
+        visibility: hidden;
       }
     </style>
     <div id="chart" style="width: [[width]]; height: [[height]]">
