@@ -92,13 +92,14 @@
 
     attached: function(){
       //if data is just empty then we can't continue building the chart
-      console.log(this.notResponsive);
       if(!this.data || this.data.length == 0)
         return false;
 
-      var compStyles = window.getComputedStyle(d3.select(this.$.chart).node())
-        , width = (!this.notResponsive) ? parseInt(compStyles.width) : this.width
-        , height = (!this.notResponsive) ? parseInt(compStyles.height) : this.height;
+      //TODO: remove this and just add a default height and width, let the window resize take care of this.
+      var compStyles = d3.select(this.$.chart).node() //window.getComputedStyle(d3.select("#chart").node())
+        , clientWidth = (compStyles.clientWidth==0) ? 960 : compStyles.clientWidth
+        , width = (!this.notResponsive) ? parseInt(clientWidth) : this.width
+        , height = this.height;
 
       var svg = d3.select(this.$.waterSVG);
       var margin = this.chartMargins;
@@ -339,9 +340,9 @@
     _resize: function() {
 
       var svg = d3.select("#waterSVG")
-        , compStyles = window.getComputedStyle(d3.select("#chart").node())
-        , width = parseInt(compStyles.width)
-        , height = parseInt(compStyles.height)
+        , compStyles = d3.select(this.$.chart).node()
+        , width = parseInt(compStyles.clientWidth)
+        , height = parseInt(this.height)
         , margin = this.chartMargins;
 
       this._setInnerDimensions({
