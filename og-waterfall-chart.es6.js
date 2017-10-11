@@ -90,7 +90,7 @@
       // window.setTimeout(function(){
       var svg = d3.select("#waterSVG")
         , compStyles = d3.select("#chart").node()
-        , width = parseInt(compStyles.clientWidth + 150)
+        , width = parseInt(compStyles.clientWidth)
         , height = parseInt(this.height)
         , margin = this.chartMargins;
       // console.log(d3.select("#chart").node().clientWidth);
