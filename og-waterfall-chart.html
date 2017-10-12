@@ -5,9 +5,10 @@
 -->
 <link rel="import" href="../polymer/polymer.html"/>
 
-<link rel="import" href="css/og-waterfall-chart-styles.html">
+<link rel="import" href="../px-d3-imports/px-d3-imports.html"/>
 
-<link rel="import" href="dependency/d3.html">
+
+<link rel="import" href="css/og-waterfall-chart-styles.html">
 <!--
 This is simple Waterfall chart that uses D3 js ver.4
 
@@ -74,8 +75,22 @@ This is simple Waterfall chart that uses D3 js ver.4
       .axis.x .domain, .axis.y .domain{
         visibility: hidden;
       }
+
+      #legendWrap{
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .legend-wrap .leg-text{
+        display: inline-block;
+        padding-left: 5px;
+        margin-left: 10px;
+      }
     </style>
     <div id="chart">
+      <div id="legendWrap">
+
+      </div>
       <svg id="waterSVG"></svg>
     </div>
   </template>

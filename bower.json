@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "polymer": "^1.9.0",
-    "d3": "^4.11.0"
+    "px-d3-imports": "^2.0.0"
   },
   "devDependencies": {
     "px-starter-kit-design": "^1.0.0",
