@@ -293,29 +293,6 @@
           .attr("style", "border-left: .3rem solid "+this.legends[i].color)
           .text(this.legends[i].label);
       }
-      //
-      //   var leg = svg.append("g").attr("class", "legend");
-      //
-      //   for(var i=0; i<this.legends.length; i++){
-      //     leg.append("rect")
-      //     .attr("class", "leg-rect")
-      //     .attr("x", i * 100)
-      //     .attr("y", 0)
-      //     .attr("width", 3)
-      //     .attr("height", 20)
-      //     .style("fill", this.legends[i].color);
-      //
-      //     leg.append("text")
-      //       .attr("x", (i * 100) + 12)
-      //       .attr("y", 0)
-      //       .attr("dy", "1em")
-      //       .text(this.legends[i].label)
-      //     // .attr("x", (this.width / 2))
-      //       // .style("text-anchor", "middle");
-      //   }
-      //
-      //   // leg.attr("transform", "translate(" + ((this.innerDimensions.width / 2) - ((this.legends.length*100 + 15*this.legends.length) / 2)) + ",0)");
-      //   leg.attr("transform", "translate(" + (this.innerDimensions.width - (this.legends.length*100 - 35*this.legends.length)) + ",5)");
     }
   });
 })();

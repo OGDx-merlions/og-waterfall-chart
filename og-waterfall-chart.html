@@ -30,18 +30,20 @@ This is simple Waterfall chart that uses D3 js ver.4
       .bar rect.no-color, .legend rect {
         fill: #5fbcf8;
       }
+
+      .bar rect{
+        cursor: pointer;
+      }
+      
       .bar.total rect.no-color {
         fill: #5fbcf8;
-        cursor: pointer;
       }
 
       .bar.increase rect.no-color {
         fill: #d43875;
-        cursor: pointer;
       }
       .bar.decrease rect.no-color {
         fill: #e2913b;
-        cursor: pointer;
       }
 
       .bar line.connector {
