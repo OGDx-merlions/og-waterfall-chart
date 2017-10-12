@@ -120,6 +120,9 @@
     },
 
     attached: function(){
+      if(!this.notResponsive)
+        d3.select(window).on('resize', this._resize.bind(this));
+
       //if data is just empty then we can't continue building the chart
       if(!this.data || this.data.length == 0)
         return false;
@@ -142,9 +145,7 @@
         margin.left += 50;
 
       this._buildChart(svg);
-
-      if(!this.notResponsive)
-        d3.select(window).on('resize', this._resize.bind(this));
+      
     },
 
     _processData: function(){
@@ -367,6 +368,7 @@
 
       svg.attr("width", this.innerDimensions.width + margin.left + margin.right)
           .attr("height", this.innerDimensions.height + margin.top + margin.bottom)//this.innerDimensions.height + margin.top + margin.bottom)
+          .attr("viewBox", "0 0 "+(this.innerDimensions.width + margin.left + margin.right)+" "+(this.innerDimensions.height + margin.top + margin.bottom))
           .append("g").attr("class", "container")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -430,22 +432,23 @@
     },
 
     _resize: function() {
+      if(this.data || this.data.length > 0){
+        var svg = d3.select("#waterSVG")
+          , compStyles = d3.select(this.$.chart).node()
+          , width = parseInt(compStyles.clientWidth)
+          , height = parseInt(this.height)
+          , margin = this.chartMargins;
 
-      var svg = d3.select("#waterSVG")
-        , compStyles = d3.select(this.$.chart).node()
-        , width = parseInt(compStyles.clientWidth)
-        , height = parseInt(this.height)
-        , margin = this.chartMargins;
+        this._setInnerDimensions({
+            width: width - margin.left - margin.right,
+            height: height  - margin.top - margin.bottom
+          });
 
-      this._setInnerDimensions({
-          width: width - margin.left - margin.right,
-          height: height  - margin.top - margin.bottom
-        });
+        svg.select(".container").remove();
+        svg.select(".legend").remove();
 
-      svg.select(".container").remove();
-      svg.select(".legend").remove();
-
-      this._buildChart(svg);
+        this._buildChart(svg);
+      }
     }
   });
 })();
