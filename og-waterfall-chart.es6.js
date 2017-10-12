@@ -34,7 +34,7 @@
       },
       yAxisLabel: {
         type: String,
-        value: "" //LNG mass flow in kg/h
+        value: "" //LNG mass flow in kg/h"
       },
       isChartBuilt: {
         type: Boolean,
@@ -76,7 +76,7 @@
       },
       chartMargins: {
         type: Object,
-        value: {top: 40, right: 30, bottom: 100, left: 50 }
+        value: {top: 40, right: 10, bottom: 100, left: 50 }
       },
       notResponsive: {
         type: Boolean,
@@ -98,9 +98,12 @@
       // window.setTimeout(function(){
       var svg = d3.select("#waterSVG")
         , compStyles = d3.select("#chart").node()
-        , width = parseInt(compStyles.clientWidth)
         , height = parseInt(this.height)
-        , margin = this.chartMargins;
+        , margin = this.chartMargins
+        , width = parseInt(compStyles.clientWidth) + margin.right;
+
+      // console.log(compStyles.getBoundingClientRect(), compStyles.offsetWidth);
+
       // console.log(d3.select("#chart").node().clientWidth);
       if(compStyles.clientWidth > 0){
         this._setInnerDimensions({
@@ -123,10 +126,6 @@
       if(!this.notResponsive)
         d3.select(window).on('resize', this._resize.bind(this));
 
-      //if data is just empty then we can't continue building the chart
-      if(!this.data || this.data.length == 0)
-        return false;
-
       //TODO: remove this and just add a default height and width, let the window resize take care of this.
       var compStyles = d3.select(this.$.chart).node() //window.getComputedStyle(d3.select("#chart").node())
         , clientWidth = (compStyles.clientWidth==0) ? 960 : compStyles.clientWidth
@@ -144,8 +143,11 @@
       if(this.yAxisLabel != "")
         margin.left += 30;
 
-      this._buildChart(svg);
+      //if data is just empty then we can't continue building the chart
+      if(!this.data || this.data.length == 0)
+        return false;
 
+      this._buildChart(svg);
     },
 
     _processData: function(){
@@ -372,8 +374,8 @@
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // if(!this.isChartBuilt){
-        svg.attr("viewBox", "0 0 "+(this.innerDimensions.width + margin.left + margin.right)+" "+(this.innerDimensions.height + margin.top + margin.bottom))
-      //       .attr("preserveAspectRatio", "xMidYMid meet");
+        svg.attr("viewBox", "0 0 "+(this.innerDimensions.width + margin.left + margin.right)+" "+(this.innerDimensions.height + margin.top + margin.bottom));
+            // .attr("preserveAspectRatio", "xMidYMid meet");
       // }
 
       var g = svg.select(".container");
