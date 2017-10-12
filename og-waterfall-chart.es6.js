@@ -293,6 +293,14 @@
           .attr("style", "border-left: .3rem solid "+this.legends[i].color)
           .text(this.legends[i].label);
       }
+    },
+
+    _dataChanged(newData, oldData){
+      if(oldData && oldData.length) {
+				Polymer.dom(this.$.waterSVG).node.innerHTML = "";
+        Polymer.dom(this.$.legendWrap).node.innerHTML = "";
+				this.draw();
+			}
     }
   });
 })();

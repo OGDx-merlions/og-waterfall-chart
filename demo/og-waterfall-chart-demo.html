@@ -35,6 +35,7 @@
 
       <!-- Component ---------------------------------------------------------->
       <px-demo-component>
+        <button type="button" name="button" on-click="changeData">Change Data</button>
         <og-waterfall-chart
            data="[[props.chartData.value]]" on-bar-click="handleBarClick" width="960" height="300" starting-value="97505" legends="[[props.legends]]" floor-value="96000" >
         </og-waterfall-chart>
@@ -248,6 +249,18 @@
       newArr[0].values[0].value = -400;
 
       this.chartData = newArr;
+    },
+    changeData: function() {
+      this.demoProps.chartData = [
+        { label: 'MCR1 head', value: 304, name: "mcr1_head" },
+        { label: 'MCR1 eff.', value: 200, name: "mcr1_eff" },
+        { label: 'MCR2 eff.', value: 225, name: "mcr2_eff" },
+        { label: 'AC1', value: 163, name: "ac1" },
+        { label: 'AC3', value: 117, name: "ac3" },
+        { label: 'AC2', value: 15, name: "ac2" },
+        { label: 'MCR2 head', value: 42, name: "mcr2_head" },
+        { label: 'total', value: 42, name: "total", isComputed: true }
+        ]
     }
   });
 </script>
