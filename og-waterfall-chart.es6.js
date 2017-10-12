@@ -20,6 +20,10 @@
         type: Number,
         value: 96000
       },
+      ceilingValue: {
+        type: Number,
+        value: 0
+      },
       yAxisTicks: {
         type: Number,
         value: 5
@@ -210,8 +214,12 @@
     },
 
     _xyBounds: function(data){
+      var ceilDiff = +this.ceilingValue - d3.max(data, function(d) { return d.end; })
+        , intervalMultiplier = Math.ceil(ceilDiff / this.yTickInterval)
+        , ceilAdd = intervalMultiplier * this.yTickInterval;
+
       var bounds = {
-        ceiling: d3.max(data, function(d) { return d.end; }) + this.yTickInterval,
+        ceiling: d3.max(data, function(d) { return d.end; }) + ((+this.ceilingValue == 0) ? this.yTickInterval : ceilAdd),
         x: d3.scaleBand()
                 .rangeRound([0, this.innerDimensions.width])
                 .paddingInner(0.05),
