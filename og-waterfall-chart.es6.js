@@ -142,10 +142,10 @@
         });
 
       if(this.yAxisLabel != "")
-        margin.left += 50;
+        margin.left += 30;
 
       this._buildChart(svg);
-      
+
     },
 
     _processData: function(){
@@ -368,9 +368,13 @@
 
       svg.attr("width", this.innerDimensions.width + margin.left + margin.right)
           .attr("height", this.innerDimensions.height + margin.top + margin.bottom)//this.innerDimensions.height + margin.top + margin.bottom)
-          .attr("viewBox", "0 0 "+(this.innerDimensions.width + margin.left + margin.right)+" "+(this.innerDimensions.height + margin.top + margin.bottom))
           .append("g").attr("class", "container")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // if(!this.isChartBuilt){
+        svg.attr("viewBox", "0 0 "+(this.innerDimensions.width + margin.left + margin.right)+" "+(this.innerDimensions.height + margin.top + margin.bottom))
+      //       .attr("preserveAspectRatio", "xMidYMid meet");
+      // }
 
       var g = svg.select(".container");
 
@@ -425,7 +429,7 @@
       if(this.isChartBuilt){
         var svg = d3.select(this.$.waterSVG);
 
-        svg.select(".container").remove();
+        svg.selectAll("*").remove();
 
         this._buildChart(svg);
       }
