@@ -296,6 +296,7 @@
     },
 
     _dataChanged(newData, oldData){
+      console.log("drawing",newData, oldData);
       if(newData && newData.length) {
 				Polymer.dom(this.$.waterSVG).node.innerHTML = "";
         Polymer.dom(this.$.legendWrap).node.innerHTML = "";
