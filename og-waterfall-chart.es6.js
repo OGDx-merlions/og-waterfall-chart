@@ -9,13 +9,6 @@
         value: [],
         observer: '_dataChanged'
       },
-      startingValue: {
-        type: Object,
-        value: {
-          label: "Clean",
-          value: 97505
-        }
-      },
       floorValue: {
         type: Number,
         value: 96000
@@ -74,14 +67,11 @@
         type: Number,
         value: 50
       },
-      chartMargins: {
-        type: Object,
-        value: {top: 40, right: 10, bottom: 100, left: 50 }
+      startingValue: {
+        type: Number,
+        value: 0,
+        readOnly: true
       },
-      notResponsive: {
-        type: Boolean,
-        value: false
-      }
     },
 
     listeners: {
@@ -123,6 +113,8 @@
 				.append("g")
 					.attr("transform",
 								"translate(" + margin.left + "," + margin.top + ")");
+
+      this._setStartingValue(data[0].value)
 
       let cumulative = +this.startingValue;
 
