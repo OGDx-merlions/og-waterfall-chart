@@ -101,7 +101,8 @@
     },
 
     attached(){
-      this.draw();
+      if(this.data && this.data.length)
+        this.draw();
     },
 
     draw(){
@@ -112,6 +113,9 @@
       let margin = {top: 20, right: 20, bottom: 30, left: 50},
 					width = this.width - margin.left - margin.right,
 					height = this.height - margin.top - margin.bottom;
+
+      if(isNaN(width) || isNaN(height))
+        return false;
 
       let svg = d3.select(this.$.waterSVG)
 					.attr("viewBox", "0 0 "+this.width+" "+this.height)
