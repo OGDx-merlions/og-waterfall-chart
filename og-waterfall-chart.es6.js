@@ -25,6 +25,10 @@
         type: Number,
         value: 500
       },
+      yTickFormat: {
+        type: String,
+        value: ""
+      },
       yAxisLabel: {
         type: String,
         value: "" //LNG mass flow in kg/h"
@@ -176,8 +180,14 @@
                   if(data[l].name == d)
                     return data[l].label;
               });
-      let yAxis = d3.axisLeft(y).ticks(me.yAxisTicks)
-            .tickFormat((d) => d).tickValues(d3.range(me.floorValue, ceiling, me.yTickInterval));
+      let yAxis = d3.axisLeft(y).ticks(me.yAxisTicks).tickValues(d3.range(me.floorValue, ceiling, me.yTickInterval));
+
+      if(this.yTickFormat != "") {
+        yAxis.tickFormat(d3.format(this.yTickFormat));
+      }
+      else {
+        yAxis.tickFormat((d) => d);
+      }
 
       g.append("g")
         .attr("class", "x axis")
