@@ -37,7 +37,17 @@
       <px-demo-component>
         <button type="button" name="button" on-click="changeData">Change Data</button>
         <og-waterfall-chart
-           data="[[props.chartData.value]]" on-bar-click="handleBarClick" width="960" height="300" starting-value="97505" legends="[[props.legends]]" floor-value="96000" >
+              id="waterFallChart"
+                data="[[props.chartData.value]]"
+                on-bar-click="handleBarClick"
+                floor-value="{{props.floorValue}}"
+                starting-value="{{props.startingValue}}"
+                width="960"
+                height="350"
+                y-tick-interval="20"
+                legends="{{lossAttributeLegends}}"
+                ceiling-value ="{{props.ceilingValue}}"
+                y-axis-label ="Metric ton/day">
         </og-waterfall-chart>
       </px-demo-component>
       <!-- END Component ------------------------------------------------------>
@@ -199,16 +209,25 @@
       chartData: {
         type: Array,
         value: [
-          { label: 'Start Col wrap', value: -276, name: "start", isStarting: true, color: "#5fbcf8"},
-          { label: 'MCR1 eff lkajsdflk', value: -276, name: "mcr1_eff", color: "#e2913b"},
-          { label: 'MCR1 head dkfj', value: -287, name: "mcr1_head", color: "#e2913b" },
-          { label: 'AC1', value: -177, name: "ac1", color: "#e2913b" },
-          { label: 'MCR2 eff.', value: -230, name: "mcr2_eff", color: "#e2913b" },
-          { label: 'MCR2 head', value: -8, name: "mcr2_head", color: "#e2913b" },
-          { label: 'AC2', value: -48, name: "ac2", color: "#e2913b" },
-          { label: 'AC3', value: -169, name: "ac3", color: "#e2913b" },
-          { label: 'Computed Col', value: -169, name: "compCol", isComputed: true, color: "#5fbcf8" }
-          ]
+          {"label":"Design Capacity","value":720.56,"name":"start","isStarting":true,"color":"#5abef6"},
+          {"label":"NGL Recovery","name":"ngl_recovery","value":-1.921,"color":"#e28d17"},
+          {"label":"Acid Gas Treatment","name":"acid_gas_treatment","value":-2.641,"color":"#e28d17"},
+          {"label":"Dehydration","name":"dehydration","value":-1.56,"color":"#e28d17"},
+          {"label":"Mercury Removal","name":"mercury_removal","value":0,"color":"#e28d17"},
+          {"label":"Refrigeration","name":"refrigeration","value":-15.611,"color":"#e28d17"},
+          {"label":"Tankage and Terminal","name":"tankage_and_terminal","value":-1.56,"color":"#e28d17"},
+          {"label":"Utilities","name":"utilities","value":-4.082,"color":"#e28d17","start":697.267},
+          {"label":"Observed","value":0,"name":"observed","isComputed":true,"color":"#5abef6"}]
+          // { label: 'Start Col wrap', value: -276, name: "start", isStarting: true, color: "#5fbcf8"},
+          // { label: 'MCR1 eff lkajsdflk', value: -276, name: "mcr1_eff", color: "#e2913b"},
+          // { label: 'MCR1 head dkfj', value: -287, name: "mcr1_head", color: "#e2913b" },
+          // { label: 'AC1', value: -177, name: "ac1", color: "#e2913b" },
+          // { label: 'MCR2 eff.', value: -230, name: "mcr2_eff", color: "#e2913b" },
+          // { label: 'MCR2 head', value: -8, name: "mcr2_head", color: "#e2913b" },
+          // { label: 'AC2', value: -48, name: "ac2", color: "#e2913b" },
+          // { label: 'AC3', value: -169, name: "ac3", color: "#e2913b" },
+          // { label: 'Computed Col', value: -169, name: "compCol", isComputed: true, color: "#5fbcf8" }
+          // ]
         // [
           // { groupName: 'decrease', values: [
           //   { label: 'Start Col wrap', value: -276, name: "start", isStarting: true, color: "#5fbcf8"},
@@ -238,7 +257,10 @@
       legends: [
         { label: "Decrease", color: "#e2913b" },
         { label: "Total", color: "#5fbcf8" }
-      ]
+      ],
+      floorValue: 620,
+      startingValue: 720,
+      ceilingValue: 740
     },
     handleBarClick: function(e, data){
       console.log("This is handled from the dashboard page", data);

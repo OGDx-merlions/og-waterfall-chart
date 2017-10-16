@@ -158,7 +158,8 @@
       let ceilDiff = +this.ceilingValue - d3.max(data, function(d) { return d.end; })
         , intervalMultiplier = Math.ceil(ceilDiff / me.yTickInterval)
         , ceilAdd = intervalMultiplier * me.yTickInterval
-        , ceiling = (+this.ceilingValue == 0) ? (d3.max(data, (d) => d.end ) + ((+me.ceilingValue == 0) ? me.yTickInterval : ceilAdd)) : (+this.ceilingValue + me.yTickInterval);
+        , ceiling = (+this.ceilingValue == 0) ? (d3.max(data, (d) => d.end ) + ((+me.ceilingValue == 0) ? me.yTickInterval : ceilAdd)) : (+this.ceilingValue + .001);
+        // , ceiling = (d3.max(data, (d) => d.end ) + ((+me.ceilingValue == 0) ? me.yTickInterval : ceilAdd));
 
         // console.log(d3.max(data, (d) => { return d.end; }));
       let x = d3.scaleBand().rangeRound([0, width]).paddingInner(0.05);
@@ -184,9 +185,7 @@
                     return data[l].label;
               });
       let yAxis = d3.axisLeft(y).ticks(me.yAxisTicks)
-            .tickFormat((d) => d ).tickValues(d3.range(me.floorValue, ceiling, me.yTickInterval));
-
-      // console.log(data);
+            .tickFormat((d) => d).tickValues(d3.range(me.floorValue, ceiling, me.yTickInterval));
 
       g.append("g")
         .attr("class", "x axis")
