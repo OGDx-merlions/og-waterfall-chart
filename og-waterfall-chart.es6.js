@@ -154,7 +154,7 @@
       let ceilDiff = +this.ceilingValue - d3.max(data, function(d) { return d.end; })
         , intervalMultiplier = Math.ceil(ceilDiff / me.yTickInterval)
         , ceilAdd = intervalMultiplier * me.yTickInterval
-        , ceiling = d3.max(data, (d) => d.end ) + ((+me.ceilingValue == 0) ? me.yTickInterval : ceilAdd);
+        , ceiling = (+this.ceilingValue == 0) ? (d3.max(data, (d) => d.end ) + ((+me.ceilingValue == 0) ? me.yTickInterval : ceilAdd)) : (+this.ceilingValue + me.yTickInterval);
 
         // console.log(d3.max(data, (d) => { return d.end; }));
       let x = d3.scaleBand().rangeRound([0, width]).paddingInner(0.05);
