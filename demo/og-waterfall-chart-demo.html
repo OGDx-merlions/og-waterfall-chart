@@ -17,7 +17,11 @@
 <!-- Demo DOM module -->
 <dom-module id="og-waterfall-chart-demo">
   <template>
-    <style include="px-demo-styles" is="custom-style"></style>
+    <style include="px-demo-styles" is="custom-style">
+      :host{
+        --legend-text-padding-right: 1em
+      }
+    </style>
 
     <!-- Header -->
     <px-demo-header
