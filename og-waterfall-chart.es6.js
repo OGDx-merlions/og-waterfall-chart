@@ -54,6 +54,10 @@
           { label: "Total", color: "#5fbcf8" }
         ]
       },
+      barTextFormat: {
+        type: String,
+        value: ","
+      },
       //chart appearance related properties
       width: {
         type: String,
@@ -211,7 +215,7 @@
             .tickFormat("")
         );
 
-      let formatComma = d3.format(",");
+      let formatComma = d3.format(me.barTextFormat);
       //
       // //adding each bar from the data
       // //this are the columns. the gaps between them are based on the x() function created above
