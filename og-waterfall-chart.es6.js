@@ -108,7 +108,7 @@
         , me = this
         , data = this.data;
 
-      let margin = {top: 20, right: 20, bottom: 30, left: 50},
+      let margin = {top: 20, right: 20, bottom: 50, left: 50},
 					width = this.width - margin.left - margin.right,
 					height = this.height - margin.top - margin.bottom;
 
@@ -176,6 +176,7 @@
       //build axes
       //to display the X axis on the chart
       let barWidth = (x.bandwidth() > me.barMaxWidth) ? me.barMaxWidth : x.bandwidth();
+      let innerMarginLeft = 30;
 
       let xAxis = d3.axisBottom(x).tickFormat((d) => {
                 //fetch the label field
@@ -195,7 +196,7 @@
 
       g.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(-20," + (me.height - 50) + ")")
+        .attr("transform", "translate(10," + (me.height - 70) + ")")
         .call(xAxis)
         .selectAll("text")
         .attr("y", 15)
@@ -215,6 +216,14 @@
             .tickFormat("")
         );
 
+      g.append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 0 - margin.left)
+				.attr("x",0 - (height / 2))
+				.attr("dy", "1em")
+				.attr("class", "yaxis-label")
+				.text(me.yAxisLabel);
+
       let formatComma = d3.format(me.barTextFormat);
       //
       // //adding each bar from the data
@@ -223,7 +232,9 @@
           .data(data)
           .enter().append("g")
           .attr("class", (d) => "bar " + d.class )
-          .attr("transform", (d) => "translate(" + x(d.name) + ",0)" )
+          .attr("transform", (d) => {
+            return "translate(" + (innerMarginLeft + (x(d.name) + ((x.bandwidth() / 2) - barWidth/2) - 20)) + ",0)";
+          } )
           .on("click", me.barClick.bind(me));
 
       //on each column we add the actual bars that will appear
@@ -231,6 +242,8 @@
       //the height of the bar is based on the difference of start and end (no negatives)
       bar.append("rect")
           .attr("y", (d) => y( Math.max(d.start, d.end) ) )
+          //TODO: set the x here so that the rec is i
+          .attr("x", (d) => x(barWidth) )
           .attr("height", (d) => { return Math.abs( y(d.start) - y(d.end) ); })
           .attr("width", barWidth)
           .attr("class", (d) => {
