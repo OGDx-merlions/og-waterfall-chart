@@ -323,6 +323,12 @@
         Polymer.dom(this.$.legendWrap).node.innerHTML = "";
 				this.draw();
 			}
+    },
+
+    redraw(){
+			Polymer.dom(this.$.waterSVG).node.innerHTML = "";
+      Polymer.dom(this.$.legendWrap).node.innerHTML = "";
+			this.draw();
     }
   });
 })();
