@@ -290,13 +290,21 @@
             y = text.attr("y"),
             dy = parseFloat(text.attr("dy")),
             tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+
         while (word = words.pop()) {
           line.push(word);
           tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width || tspan.node().getComputedTextLength() == 0) {
+          var compTextLen = tspan.node().getComputedTextLength();
+
+          if(compTextLen == 0){
+            compTextLen = tspan.node().innerHTML.length * 4.8
+          }
+
+          if (compTextLen > width) {
             line.pop();
             tspan.text(line.join(" "));
             line = [word];
+            // console.log("test new wrap", y, tspan.node().innerHTML);
             tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
           }
         }
