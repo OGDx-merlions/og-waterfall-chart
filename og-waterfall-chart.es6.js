@@ -258,16 +258,16 @@
       bar.append("text")
           .attr("x", barWidth / 2)
           .attr("y", (d) => {
-            return (d.class=="decrease") ? y(d.end) : y(d.end) - 10;
+            return (d.class=="decrease") ? y(d.end) + 2 : y(d.end) - 12;
           })
           .attr("dy", (d) => { return ((d.class=='negative') ? '-' : '') + ".75em" })
           .text((d) => { return (d.class=="total") ? formatComma(d.end) : formatComma(d.end - d.start);});
       //
-      bar.filter((d) => { return d.class != "total" }).append("line")
+      bar.filter((d) => { return !d.isComputed }).append("line")
           .attr("class", "connector")
           .attr("x1", barWidth )
           .attr("y1", function(d) { return y(d.end) } )
-          .attr("x2", x.bandwidth() / ( 1 - me.barPadding) - 5 )
+          .attr("x2", x.bandwidth()  ) // / ( 1 - me.barPadding) - 5
           .attr("y2", function(d) { return y(d.end) } )
 
       me._addLegend();
