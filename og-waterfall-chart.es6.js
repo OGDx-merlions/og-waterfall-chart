@@ -267,7 +267,7 @@
           .attr("class", "connector")
           .attr("x1", barWidth )
           .attr("y1", function(d) { return y(d.end) } )
-          .attr("x2", x.bandwidth()  ) // / ( 1 - me.barPadding) - 5
+          .attr("x2", x.bandwidth() + 10 ) // / ( 1 - me.barPadding) - 5
           .attr("y2", function(d) { return y(d.end) } )
 
       me._addLegend();
