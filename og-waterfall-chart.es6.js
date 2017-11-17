@@ -80,6 +80,13 @@
         value: 0,
         readOnly: true
       },
+      margin: {
+        type: Object,
+        value() {
+          return {top: 20, right: 20, bottom: 50, left: 50};
+        },
+        observer: '_dataChanged'
+      }
     },
 
     listeners: {
@@ -108,9 +115,9 @@
         , me = this
         , data = this.data;
 
-      let margin = {top: 20, right: 20, bottom: 50, left: 50},
+      let margin = this.margin || {top: 20, right: 20, bottom: 50, left: 50},
 					width = this.width - margin.left - margin.right,
-					height = this.height - margin.top - margin.bottom;
+          height = this.height - margin.top - margin.bottom;
 
       if(isNaN(width) || isNaN(height))
         return false;
@@ -326,7 +333,7 @@
     },
 
     _dataChanged(newData, oldData){
-      if(newData && newData.length) {
+      if(newData) {
 				Polymer.dom(this.$.waterSVG).node.innerHTML = "";
         Polymer.dom(this.$.legendWrap).node.innerHTML = "";
 				this.draw();
