@@ -1,6 +1,6 @@
 {
   "name": "og-waterfall-chart",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": [
     "og-waterfall-chart.html"
   ],
