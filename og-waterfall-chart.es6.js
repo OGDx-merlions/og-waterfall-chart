@@ -61,11 +61,11 @@
       //chart appearance related properties
       width: {
         type: String,
-        value: "100%"
+        value: "960"
       },
       height: {
         type: String,
-        value: "300px"
+        value: "300"
       },
       barPadding: {
         type: Number,
@@ -111,6 +111,10 @@
     },
 
     draw(){
+      if(!this.data || !this.data.length) {
+        return;
+      }
+
       let d3 = Px.d3
         , me = this
         , data = this.data;
@@ -226,7 +230,7 @@
       g.append("text")
 				.attr("transform", "rotate(-90)")
 				.attr("y", 0 - margin.left)
-				.attr("x",0 - (height / 2))
+				.attr("x",0 - (height - margin.top))
 				.attr("dy", "1em")
 				.attr("class", "yaxis-label")
 				.text(me.yAxisLabel);
